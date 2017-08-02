@@ -1,0 +1,42 @@
+/*
+font-family: 'Raleway', sans-serif;
+font-family: 'VT323', monospace;
+font-family: 'Zilla Slab Highlight', cursive;
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #020502;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2 {
+  margin: 0;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.header {
+  margin-top: 10px;
+  height: 20px;
+  text-align: center;
+  color: green;
+  font-family: 'Zilla Slab Highlight';
+  font-size: 10px;
+}
+
+.game-container {
+  margin: 0 auto;
+  margin-top: 20px;
+  height: 256px;
+  outline: 1px solid #315f31;
+  width: 256px;
+}
+
+.footer {
+  height: 20px;
+}
