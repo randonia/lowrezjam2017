@@ -20,6 +20,10 @@ h1, h2 {
   padding: 0;
 }
 
+.debug {
+  color: white;
+}
+
 .header {
   margin-top: 10px;
   height: 20px;

@@ -11,6 +11,11 @@ class BaseState {
     game.renderer.renderSession.roundPixels = true;
     Phaser.Canvas.setImageRenderingCrisp(this.game.canvas)
   }
+  preRender() {
+    if (DEBUG) {
+      clearDebugText();
+    }
+  }
   create() {
     throw Error('Not Implemented');
   }

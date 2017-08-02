@@ -15,16 +15,18 @@ class GameState extends BaseState {
     // Set up the collision map
     map = game.add.tilemap('ship-map');
     map.addTilesetImage('player-ship', 'tiles-1');
+    map.setCollisionBetween(1, 100);
     layer = map.createLayer('ship-border');
+    layer.debug = DEBUG;
     layer.resizeWorld();
 
-    player = game.add.sprite(5, 5, 'player');
-    game.physics.arcade.enable(player);
-    // player.body.gravity.y = 100;
-    player.body.collideWorldBounds = true;
+    player = new Player();
   }
   update() {
+    player.update();
     // const onGround = game.physics.arcade.collide(player, map);
   }
-  render() {}
+  render() {
+    player.render();
+  }
 }
