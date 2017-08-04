@@ -24,7 +24,6 @@ class GameState extends BaseState {
   }
   update() {
     player.update();
-    // const onGround = game.physics.arcade.collide(player, map);
   }
   render() {
     player.render();

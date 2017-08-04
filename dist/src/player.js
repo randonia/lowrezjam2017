@@ -8,6 +8,10 @@ class Player {
     this.cursors = game.input.keyboard.createCursorKeys();
   }
   update() {
+    // Handle player -> world collisions
+    if (layer) {
+      game.physics.arcade.collide(player.sprite, layer, this.onCollide);
+    }
     // Movement
     const LEFT = this.cursors.left.isDown;
     const RIGHT = this.cursors.right.isDown;
@@ -31,6 +35,9 @@ class Player {
 
     this.sprite.body.acceleration.x += dX;
     this.sprite.body.acceleration.y += dY;
+  }
+  onCollide(sprite1, sprite2) {
+    sprite1.body.acceleration.set(0, 0);
   }
   render() {
     if (DEBUG) {
