@@ -1,11 +1,23 @@
+const PLAYER_ACCELERATION = 5.0;
+
 class Player {
   constructor() {
-    this.sprite = game.add.sprite(0, 0, 'player');
+    const startX = 8 * 12;
+    const startY = 8 * 12;
+    console.log(sprintf('Starting player at [%d,%d]', startX, startY));
+    this.sprite = game.add.sprite(startX, startY, 'player');
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.collideWorldBounds = true;
     // player.body.gravity.y = 100;
     game.camera.follow(this.sprite);
     this.cursors = game.input.keyboard.createCursorKeys();
+    this.keys = {
+      LEFT: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+      RIGHT: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
+      UP: game.input.keyboard.addKey(Phaser.Keyboard.UP),
+      DOWN: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
+      SLOW: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+    };
   }
   update() {
     // Handle player -> world collisions
@@ -13,10 +25,10 @@ class Player {
       game.physics.arcade.collide(player.sprite, layer, this.onCollide);
     }
     // Movement
-    const LEFT = this.cursors.left.isDown;
-    const RIGHT = this.cursors.right.isDown;
-    const UP = this.cursors.up.isDown;
-    const DOWN = this.cursors.down.isDown;
+    const LEFT = this.keys.LEFT.isDown;
+    const RIGHT = this.keys.RIGHT.isDown;
+    const UP = this.keys.UP.isDown;
+    const DOWN = this.keys.DOWN.isDown;
 
     let dX = 0;
     let dY = 0;
@@ -33,8 +45,14 @@ class Player {
       dY = -this.sprite.body.acceleration.y * 0.125;
     }
 
-    this.sprite.body.acceleration.x += dX;
-    this.sprite.body.acceleration.y += dY;
+    this.sprite.body.acceleration.x += dX * PLAYER_ACCELERATION;
+    this.sprite.body.acceleration.y += dY * PLAYER_ACCELERATION;
+    // Apply Space Dampeners
+    if (this.keys.SLOW.isDown) {
+      this.sprite.body.acceleration.set(0, 0);
+      this.sprite.body.velocity.x *= 0.85;
+      this.sprite.body.velocity.y *= 0.85;
+    }
   }
   onCollide(sprite1, sprite2) {
     sprite1.body.acceleration.set(0, 0);
