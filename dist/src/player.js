@@ -6,6 +6,8 @@ class Player {
     const startY = 8 * 12;
     console.log(sprintf('Starting player at [%d,%d]', startX, startY));
     this.sprite = game.add.sprite(startX, startY, 'player');
+    this.sprite.gameObject = this;
+    this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.collideWorldBounds = true;
     // player.body.gravity.y = 100;
@@ -18,6 +20,16 @@ class Player {
       DOWN: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
       SLOW: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
     };
+  }
+  registerStationSignals(signals) {
+    signals.onTriggerEnter.add(this.onStationEnter, this);
+    signals.onTriggerExit.add(this.onStationExit, this);
+  }
+  onStationEnter(a) {
+    console.log('Entering station', a);
+  }
+  onStationExit(a) {
+    console.log('Exiting station', a);
   }
   update() {
     // Handle player -> world collisions
