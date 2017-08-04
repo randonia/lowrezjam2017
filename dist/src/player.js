@@ -42,6 +42,8 @@ class Player {
     const UP = this.keys.UP.isDown;
     const DOWN = this.keys.DOWN.isDown;
 
+    this.sprite.scale.x = (LEFT && !RIGHT) ? -1 : this.sprite.scale.x;
+    this.sprite.scale.x = (!LEFT && RIGHT) ? 1 : this.sprite.scale.x;
     let dX = 0;
     let dY = 0;
     dX -= LEFT ? 1 : 0;
