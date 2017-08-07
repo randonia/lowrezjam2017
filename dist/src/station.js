@@ -13,6 +13,8 @@ class BaseStation {
     this.sprite = game.add.sprite(x, y, 'stations');
     this.sprite.gameObject = this;
     game.physics.arcade.enable(this.sprite);
+    this.sprite.body.height = this.sprite.height * 0.5;
+    this.sprite.body.offset.y = this.sprite.height * 0.5;
     this.signals = {
       onTriggerEnter: new Phaser.Signal(),
       onTriggerStay: new Phaser.Signal(),
