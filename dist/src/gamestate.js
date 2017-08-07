@@ -8,6 +8,7 @@ class GameState extends BaseState {
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('player', 'assets/player.png', 8, 8, 1);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);
+    game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 4);
     game.load.image('tiles-1', 'assets/player-ship.png');
   }
 

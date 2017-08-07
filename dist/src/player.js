@@ -1,6 +1,13 @@
 const PLAYER_ACCELERATION = 5.0;
 
 class Player {
+  get X() {
+    return this.sprite.x;
+  }
+  get Y() {
+    return this.sprite.y;
+  }
+
   constructor() {
     const startX = 8 * 12;
     const startY = 8 * 12;
@@ -19,6 +26,10 @@ class Player {
       UP: game.input.keyboard.addKey(Phaser.Keyboard.UP),
       DOWN: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
       SLOW: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+      STATION_0: game.input.keyboard.addKey(Phaser.Keyboard.Z), // Four Station Keys
+      STATION_1: game.input.keyboard.addKey(Phaser.Keyboard.X),
+      STATION_2: game.input.keyboard.addKey(Phaser.Keyboard.C),
+      STATION_3: game.input.keyboard.addKey(Phaser.Keyboard.V),
     };
   }
   registerStationSignals(signals) {
@@ -27,9 +38,17 @@ class Player {
   }
   onStationEnter(a) {
     console.log('Entering station', a);
+    a.registerInputSignal('keyInput', this.keys.STATION_0.onDown, this);
+    a.registerInputSignal('keyInput', this.keys.STATION_1.onDown, this);
+    a.registerInputSignal('keyInput', this.keys.STATION_2.onDown, this);
+    a.registerInputSignal('keyInput', this.keys.STATION_3.onDown, this);
   }
   onStationExit(a) {
     console.log('Exiting station', a);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_0.onDown, this);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_1.onDown, this);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_2.onDown, this);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_3.onDown, this);
   }
   update() {
     // Handle player -> world collisions
