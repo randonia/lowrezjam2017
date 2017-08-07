@@ -12,9 +12,11 @@ const KEY_SPRITE_INDEX = {
   v: 18,
 }
 
+const TINT_SUCCESS = 0x00ff00;
+const TINT_FAILURE = 0xff0000;
 class CommandSequence {
   get complete() {
-    return this._pendingActions.length === 0;
+    return !this._failed && this._pendingActions.length === 0;
   }
   get groupWidth() {
     return this._group.width;
@@ -31,10 +33,22 @@ class CommandSequence {
     this._group.align(-1, 1, 9, 9);
   }
   receiveInput(inputKey) {
-    if (this._pendingActions.length > 0) {
-
+    if (!this._failed && this._pendingActions.length > 0) {
+      const nextKey = this._pendingActions[0];
+      const groupIndex = this._completeActions.length;
+      let resultTint = NaN;
+      if (nextKey.key === inputKey) {
+        resultTint = TINT_SUCCESS;
+        this._completeActions.push(this._pendingActions.shift());
+      } else {
+        resultTint = TINT_FAILURE;
+        this._failed = true;
+        console.log(`Wrong key - expected: [${nextKey.key}] actual: [${inputKey}]`);
+      }
+      this._group.children[groupIndex].tint = resultTint;
+      return resultTint === TINT_SUCCESS;
     } else {
-      console.warn(`Sent key [${inputKey}] to command sequence but it has no pending actions`);
+      console.warn(`Sent key [${inputKey}] to command sequence but it has failed [${this._failed}] or has no pending actions [${this._pendingActions.length === 0}]`);
     }
   }
 }
@@ -74,20 +88,25 @@ class BaseStation {
       keyInput: this.onStationKeySignal,
     }
   }
-  registerInputSignal(signalId, signal, context) {
+  registerInputSignal(signalId, signal) {
     const innerSignal = this.signalListeners[signalId];
     if (innerSignal) {
-      signal.add(innerSignal, context);
+      signal.add(innerSignal, this);
     }
   }
-  unregisterInputSignal(signalId, signal, context) {
+  unregisterInputSignal(signalId, signal) {
     const innerSignal = this.signalListeners[signalId];
     if (innerSignal) {
-      signal.remove(innerSignal, context);
+      signal.remove(innerSignal, this);
     }
   }
-  onStationKeySignal(key) {
-    console.log(`Heard Key [${key}] from signal`);
+  onStationKeySignal(keySignal) {
+    const key = keySignal.event.key;
+    if (this.sequence.receiveInput(key)) {
+      // Correct letter
+    } else {
+      // Incorrect letter
+    }
   }
   stateCheck() {
     const touchingPlayer = this.sprite.body.touching.up || this.sprite.body.touching.right || this.sprite.body.touching.down || this.sprite.body.touching.left;

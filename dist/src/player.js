@@ -38,17 +38,17 @@ class Player {
   }
   onStationEnter(a) {
     console.log('Entering station', a);
-    a.registerInputSignal('keyInput', this.keys.STATION_0.onDown, this);
-    a.registerInputSignal('keyInput', this.keys.STATION_1.onDown, this);
-    a.registerInputSignal('keyInput', this.keys.STATION_2.onDown, this);
-    a.registerInputSignal('keyInput', this.keys.STATION_3.onDown, this);
+    a.registerInputSignal('keyInput', this.keys.STATION_0.onDown);
+    a.registerInputSignal('keyInput', this.keys.STATION_1.onDown);
+    a.registerInputSignal('keyInput', this.keys.STATION_2.onDown);
+    a.registerInputSignal('keyInput', this.keys.STATION_3.onDown);
   }
   onStationExit(a) {
     console.log('Exiting station', a);
-    a.unregisterInputSignal('keyInput', this.keys.STATION_0.onDown, this);
-    a.unregisterInputSignal('keyInput', this.keys.STATION_1.onDown, this);
-    a.unregisterInputSignal('keyInput', this.keys.STATION_2.onDown, this);
-    a.unregisterInputSignal('keyInput', this.keys.STATION_3.onDown, this);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_0.onDown);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_1.onDown);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_2.onDown);
+    a.unregisterInputSignal('keyInput', this.keys.STATION_3.onDown);
   }
   update() {
     // Handle player -> world collisions
