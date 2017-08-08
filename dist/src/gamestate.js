@@ -2,6 +2,7 @@ let player;
 let map;
 let layer;
 const stations = [];
+const threats = [];
 
 class GameState extends BaseState {
   preload() {
@@ -9,6 +10,7 @@ class GameState extends BaseState {
     game.load.spritesheet('player', 'assets/player.png', 8, 8, 1);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);
     game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 23);
+    game.load.spritesheet('threats', 'assets/threats.png', 8, 8, 16);
     game.load.image('tiles-1', 'assets/player-ship.png');
   }
 
@@ -42,11 +44,17 @@ class GameState extends BaseState {
     for (var i = stations.length - 1; i >= 0; i--) {
       stations[i].update();
     }
+    for (var i = 0; i < threats.length; i++) {
+      threats[i].update();
+    }
     player.update();
   }
   render() {
     for (var i = stations.length - 1; i >= 0; i--) {
       stations[i].render();
+    }
+    for (var i = 0; i < threats.length; i++) {
+      threats[i].render();
     }
     player.render();
   }
@@ -55,6 +63,10 @@ class GameState extends BaseState {
     signals.onComplete.add(this.onStationComplete, this);
     signals.onFailure.add(this.onStationFailure, this);
   }
+  registerStationSignals(signals) {
+    signals.onComplete.remove(this.onStationComplete, this);
+    signals.onFailure.remove(this.onStationFailure, this);
+  }
   onStationComplete(sequence) {
     // For now just destroy the old one
     sequence.destroy();
@@ -62,5 +74,27 @@ class GameState extends BaseState {
   onStationFailure(sequence) {
     // For now just destroy the old one
     sequence.destroy();
+  }
+  registerThreatSignals(signals) {
+    signals.complete.add(this.onThreatComplete, this);
+    signals.expired.add(this.onThreatExpired, this);
+  }
+  unregisterThreatSignals(signals) {
+    signals.complete.remove(this.onThreatComplete, this);
+    signals.expired.remove(this.onThreatExpired, this);
+  }
+  onThreatComplete(threat) {
+    console.log('Complete threat:', threat);
+    this.resolveThreat(threat);
+  }
+  onThreatExpired(threat) {
+    console.log('Threat expired:', threat);
+    this.resolveThreat(threat);
+  }
+  resolveThreat(threat) {
+    const threatIdx = threats.indexOf(threat);
+    threats.splice(threatIdx);
+    this.unregisterThreatSignals(threat.signals);
+    threat.destroy();
   }
 }
