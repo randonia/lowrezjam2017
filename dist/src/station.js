@@ -18,6 +18,12 @@ class CommandSequence {
   get complete() {
     return !this._failed && this._pendingActions.length === 0;
   }
+  get failed() {
+    return this._failed;
+  }
+  get finished() {
+    return this.complete || this.failed;
+  }
   get groupWidth() {
     return this._group.width;
   }
@@ -51,7 +57,13 @@ class CommandSequence {
       console.warn(`Sent key [${inputKey}] to command sequence but it has failed [${this._failed}] or has no pending actions [${this._pendingActions.length === 0}]`);
     }
   }
+  destroy() {
+    if (this._group) {
+      this._group.destroy();
+    }
+  }
 }
+
 class Action {
   get key() {
     return this._key;
@@ -60,6 +72,7 @@ class Action {
     this._key = key;
   }
 }
+
 class BaseStation {
   get type() {
     throw new Error('Not Implemented BaseStation');
@@ -82,8 +95,9 @@ class BaseStation {
       onTriggerEnter: new Phaser.Signal(),
       onTriggerStay: new Phaser.Signal(),
       onTriggerExit: new Phaser.Signal(),
+      onComplete: new Phaser.Signal(),
+      onFailure: new Phaser.Signal(),
     }
-    this.sequence = this.buildCommandSequence();
     this.signalListeners = {
       keyInput: this.onStationKeySignal,
     }
@@ -102,6 +116,9 @@ class BaseStation {
   }
   onStationKeySignal(keySignal) {
     const key = keySignal.event.key;
+    if (!this.sequence) {
+      return;
+    }
     if (this.sequence.receiveInput(key)) {
       // Correct letter
     } else {
@@ -114,9 +131,14 @@ class BaseStation {
     if (touchingPlayer && !wasTouchingPlayer) {
       console.log('Started touching player');
       this.signals.onTriggerEnter.dispatch(this);
+      if (this.sequence) {
+        console.warn(`Sequence already existed - wasn't cleared earlier?`);
+      }
+      this.sequence = this.buildCommandSequence();
     } else if (!touchingPlayer && wasTouchingPlayer) {
       console.log('Stopped touching player');
       this.signals.onTriggerExit.dispatch(this);
+      this.clearSequence();
     }
     this._canInteract = touchingPlayer;
   }
@@ -125,19 +147,36 @@ class BaseStation {
     this.stateCheck();
     if (this._canInteract) {
       // Check for sequence call completion
+      if (this.sequence && this.sequence.finished) {
+        this.clearSequence();
+      }
     }
     // Position it where the station is
-    const centerX = this.sprite.centerX - this.sequence.groupWidth * 0.5;
-    const centerY = this.sprite.centerY - this.sprite.height;
-    this.sequence._group.x = centerX;
-    this.sequence._group.y = centerY;
+    if (this.sequence) {
+      const centerX = this.sprite.centerX - this.sequence.groupWidth * 0.5;
+      const centerY = this.sprite.centerY - this.sprite.height;
+      this.sequence._group.x = centerX;
+      this.sequence._group.y = centerY;
+    }
   }
+
   onInteract() {
     throw new Error('Not Implemented BaseStation');
   }
   render() {
     if (DEBUG) {
       game.debug.body(this.sprite);
+    }
+  }
+  clearSequence() {
+    if (this.sequence) {
+      if (this.sequence.complete) {
+        this.signals.onComplete.dispatch(this.sequence);
+      } else if (this.sequence.failed) {
+        this.signals.onFailure.dispatch(this.sequence);
+      }
+      // Create another sequence
+      this.sequence = this.buildCommandSequence();
     }
   }
 }

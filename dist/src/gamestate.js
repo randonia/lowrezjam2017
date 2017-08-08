@@ -34,6 +34,7 @@ class GameState extends BaseState {
     player = new Player();
 
     for (var i = stations.length - 1; i >= 0; i--) {
+      this.registerStationSignals(stations[i].signals);
       player.registerStationSignals(stations[i].signals);
     }
   }
@@ -48,5 +49,18 @@ class GameState extends BaseState {
       stations[i].render();
     }
     player.render();
+  }
+  // Expects onComplete and onFailure
+  registerStationSignals(signals) {
+    signals.onComplete.add(this.onStationComplete, this);
+    signals.onFailure.add(this.onStationFailure, this);
+  }
+  onStationComplete(sequence) {
+    // For now just destroy the old one
+    sequence.destroy();
+  }
+  onStationFailure(sequence) {
+    // For now just destroy the old one
+    sequence.destroy();
   }
 }
