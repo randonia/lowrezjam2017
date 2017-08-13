@@ -78,12 +78,9 @@ class GameState extends BaseState {
         break;
       }
     }
-    // For now just destroy the old sequence on complete
-    sequence.destroy();
   }
   onStationFailure(sequence) {
-    // For now just destroy the old sequence
-    sequence.destroy();
+    console.log('Sequence failed');
   }
   registerThreatSignals(signals) {
     signals.complete.add(this.onThreatComplete, this);

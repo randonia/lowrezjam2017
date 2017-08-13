@@ -68,6 +68,24 @@ class CommandSequence {
       console.warn(`Sent key [${inputKey}] to command sequence but it has failed [${this._failed}] or has no pending actions [${this._pendingActions.length === 0}]`);
     }
   }
+  animateFinish() {
+    if (this.complete) {
+      const tween = game.add.tween(this._group).to({
+          alpha: 0,
+          y: this._group.y - 15,
+        },
+        500,
+        Phaser.Easing.Default,
+        true);
+      tween.onComplete.add(this.onAnimationComplete, this);
+    } else if (this.failed) {
+
+    }
+  }
+  onAnimationComplete() {
+    console.log('Cleaning up station', this);
+    this.destroy();
+  }
   destroy() {
     if (this._group) {
       this._group.destroy();
@@ -159,7 +177,8 @@ class BaseStation {
     if (this._canInteract) {
       // Check for sequence call completion
       if (this.sequence && this.sequence.finished) {
-        this.clearSequence();
+        this.finishSequence();
+        this.startNewSequence();
       }
     }
     // Position it where the station is
@@ -180,15 +199,28 @@ class BaseStation {
     }
   }
   clearSequence() {
+    this.sequence.destroy();
+    delete this.sequence;
+  }
+  finishSequence() {
     if (this.sequence) {
       if (this.sequence.complete) {
         this.signals.onComplete.dispatch(this.sequence);
       } else if (this.sequence.failed) {
         this.signals.onFailure.dispatch(this.sequence);
       }
-      // Create another sequence
-      this.sequence = this.buildCommandSequence();
+      this.sequence.animateFinish();
+      this.sequence = undefined;
+    } else {
+      console.warn('Called finishSequence with no sequence');
     }
+  }
+  startNewSequence() {
+    if (this.sequence) {
+      console.warn('Created new sequence when one already exists');
+    }
+    // Create another sequence
+    this.sequence = this.buildCommandSequence();
   }
 }
 
