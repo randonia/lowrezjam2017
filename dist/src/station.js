@@ -1,10 +1,20 @@
 const STATION_TYPES = {
-  WEAPON: 0,
+  MISSILE: 0,
   SHIELD: 1,
   CORE: 2,
   THRUST: 3,
+  LASER: 4,
 };
 
+function getStationStr(typeVal) {
+  let result;
+  Object.keys(STATION_TYPES).forEach(key => {
+    if (STATION_TYPES[key] === typeVal) {
+      result = key;
+    }
+  });
+  return result;
+}
 const KEY_SPRITE_INDEX = {
   z: 0,
   x: 6,
@@ -27,7 +37,8 @@ class CommandSequence {
   get groupWidth() {
     return this._group.width;
   }
-  constructor(actions) {
+  constructor(actions, station) {
+    this.station = station;
     this._pendingActions = actions;
     this._completeActions = [];
     this._group = game.add.group();
@@ -81,7 +92,7 @@ class BaseStation {
     throw new Error('Not Implemented');
   }
   buildCommandSequence() {
-    return new CommandSequence(this.buildRequiredActions());
+    return new CommandSequence(this.buildRequiredActions(), this);
   }
   constructor(x, y) {
     // Engine stuff
@@ -181,9 +192,9 @@ class BaseStation {
   }
 }
 
-class WeaponStation extends BaseStation {
+class MissileStation extends BaseStation {
   get type() {
-    return STATION_TYPES.WEAPON;
+    return STATION_TYPES.MISSILE;
   }
   buildRequiredActions() {
     const OPTS = [

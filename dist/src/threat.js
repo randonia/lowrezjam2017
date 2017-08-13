@@ -50,8 +50,16 @@ class Threat {
       expired: new Phaser.Signal(),
     };
   }
-  takeRequirement(station) {
-    // TODO
+  acceptStationInput(stationType) {
+    const stationStr = getStationStr(stationType);
+    const idx = this.requirements.indexOf(stationType);
+    if (idx !== -1) {
+      this.requirements.splice(idx);
+      console.log(`Removed ${stationStr} from ${this.type}`);
+    } else {
+      console.log(`Not accepting inputs from ${stationStr} from ${this.type}`);
+    }
+    return idx !== -1;
   }
   update() {
     if (this.complete) {
@@ -91,7 +99,7 @@ class AsteroidThreat extends Threat {
     super(Threat.TYPE_ASTEROID);
   }
   makeRequirements() {
-    return [STATION_TYPES.SHIELD];
+    return [STATION_TYPES.MISSILE];
   }
   makeDuration() {
     return (5 + Math.random() * 15) * 1000;

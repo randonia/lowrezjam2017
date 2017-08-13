@@ -29,8 +29,8 @@ class GameState extends BaseState {
     layer.resizeWorld();
 
     // Create the stations for the player to interact
-    const weaponStation = new WeaponStation(4 * 8, 8 * 18);
-    stations.push(weaponStation);
+    const missileStation = new MissileStation(4 * 8, 8 * 18);
+    stations.push(missileStation);
 
     // Create the player
     player = new Player();
@@ -41,6 +41,8 @@ class GameState extends BaseState {
     }
   }
   update() {
+    // Sort the threats by the time remaining
+    threats.sort(item => item.remainingTime);
     for (var i = stations.length - 1; i >= 0; i--) {
       stations[i].update();
     }
@@ -63,16 +65,24 @@ class GameState extends BaseState {
     signals.onComplete.add(this.onStationComplete, this);
     signals.onFailure.add(this.onStationFailure, this);
   }
-  registerStationSignals(signals) {
+  unregisterStationSignals(signals) {
     signals.onComplete.remove(this.onStationComplete, this);
     signals.onFailure.remove(this.onStationFailure, this);
   }
   onStationComplete(sequence) {
-    // For now just destroy the old one
+    for (var i = 0; i < threats.length; i++) {
+      const threat = threats[i];
+      if (threat.acceptStationInput(sequence.station.type)) {
+        // Resolve the threat with animation?
+        console.log('Station ', sequence.station, 'targeting threat', threat);
+        break;
+      }
+    }
+    // For now just destroy the old sequence on complete
     sequence.destroy();
   }
   onStationFailure(sequence) {
-    // For now just destroy the old one
+    // For now just destroy the old sequence
     sequence.destroy();
   }
   registerThreatSignals(signals) {
