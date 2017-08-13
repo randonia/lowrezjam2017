@@ -6,6 +6,9 @@ const threats = [];
 
 class GameState extends BaseState {
   preload() {
+    // Don't forget to update `xadvance` property on the font by +=1
+    game.load.bitmapFont('smallfont', 'assets/fonts/sd_4x4_0.png', 'assets/fonts/sd_4x4.fnt');
+    game.load.bitmapFont('visitor', 'assets/fonts/visitor_0.png', 'assets/fonts/visitor.fnt');
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('player', 'assets/player.png', 8, 8, 1);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);

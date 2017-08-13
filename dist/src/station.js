@@ -24,6 +24,10 @@ const KEY_SPRITE_INDEX = {
 
 const TINT_SUCCESS = 0x00ff00;
 const TINT_FAILURE = 0xff0000;
+
+const TWEENS = {
+  FINISH_DURATION: 500,
+};
 class CommandSequence {
   get complete() {
     return !this._failed && this._pendingActions.length === 0;
@@ -69,18 +73,32 @@ class CommandSequence {
     }
   }
   animateFinish() {
+    const text = game.add.bitmapText(this._group.centerX, this._group.y - 6, 'smallfont', '', 4);
     if (this.complete) {
-      const tween = game.add.tween(this._group).to({
-          alpha: 0,
-          y: this._group.y - 15,
-        },
-        500,
-        Phaser.Easing.Default,
-        true);
-      tween.onComplete.add(this.onAnimationComplete, this);
+      text.text = 'SUCCESS!';
+      text.tint = TINT_SUCCESS;
     } else if (this.failed) {
-
+      text.text = 'FAILED!';
+      text.tint = TINT_FAILURE;
     }
+    const stationTween = game.add.tween(this._group).to({
+        alpha: 0,
+        y: this._group.y - 15,
+      },
+      TWEENS.FINISH_DURATION,
+      Phaser.Easing.Default,
+      true,
+      this.onAnimationComplete);
+    stationTween.onComplete.add(this.onAnimationComplete, this);
+    text.x = this._group.centerX - text.textWidth * 0.5;
+    const textTween = game.add.tween(text).to({
+        alpha: 0,
+        y: text.y - 15
+      },
+      TWEENS.FINISH_DURATION,
+      Phaser.Easing.Default,
+      true);
+    textTween.onComplete.add(() => this.destroy(), text);
   }
   onAnimationComplete() {
     console.log('Cleaning up station', this);
