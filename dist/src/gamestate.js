@@ -11,7 +11,7 @@ class GameState extends BaseState {
     game.load.bitmapFont('smallfont', 'assets/fonts/sd_4x4_0.png', 'assets/fonts/sd_4x4.fnt');
     game.load.bitmapFont('visitor', 'assets/fonts/visitor_0.png', 'assets/fonts/visitor.fnt');
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('player', 'assets/player.png', 8, 8, 1);
+    game.load.spritesheet('player', 'assets/player.png', 8, 8, 2);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);
     game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 23);
     game.load.spritesheet('threats', 'assets/threats.png', 8, 8, 16);
@@ -63,7 +63,7 @@ class GameState extends BaseState {
       threats[i].update();
     }
     if (threatGroupMidnight) {
-      threatGroupMidnight.align(-1, 1, 9, 9);
+      threatGroupMidnight.align(1, -1, 9, 9);
     }
     player.update();
   }

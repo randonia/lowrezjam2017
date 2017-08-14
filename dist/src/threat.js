@@ -44,9 +44,14 @@ class Threat {
       HUDGROUP.add(threatGroupMidnight);
     }
     this.type = type;
-    this.sprite = threatGroupMidnight.create(0, 0, 'threats');
+    this._group = game.add.group();
+    this.sprite = this._group.create(0, 0, 'threats');
     this.sprite.animations.add('base', Threat.getFrames(type), 4, true);
     this.sprite.play('base');
+    this.text = game.add.bitmapText(this.sprite.right + 1, this._group.y + 3, 'smallfont', 'Hello', 4);
+    this.text.alpha = 0.75;
+    this._group.add(this.text);
+    threatGroupMidnight.add(this._group);
     this.requirements = this.makeRequirements();
     // in milliseconds
     this._duration = this.makeDuration();
@@ -68,6 +73,11 @@ class Threat {
     return idx !== -1;
   }
   update() {
+    if (this.elapsedTime > this.remainingTime * 2) {
+      this.sprite.animations.currentAnim.speed = 12;
+    } else if (this.elapsedTime > this.remainingTime) {
+      this.sprite.animations.currentAnim.speed = 8;
+    }
     if (this.complete) {
       this.signals.complete.dispatch(this);
     } else if (this.expired) {
@@ -121,7 +131,7 @@ class Threat {
     return result;
   }
   destroy() {
-    this.sprite.destroy();
+    this._group.destroy();
   }
 }
 

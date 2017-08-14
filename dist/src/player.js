@@ -13,6 +13,8 @@ class Player {
     const startY = 8 * 12;
     console.log(sprintf('Starting player at [%d,%d]', startX, startY));
     this.sprite = game.add.sprite(startX, startY, 'player');
+    this.sprite.animations.add('idle', [0, 1], 6, true);
+    this.sprite.play('idle');
     this.sprite.gameObject = this;
     this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
