@@ -27,6 +27,7 @@ const TINT_FAILURE = 0xff0000;
 
 const TWEENS = {
   FINISH_DURATION: 500,
+  START_DELAY: 250,
 };
 class CommandSequence {
   get complete() {
@@ -36,7 +37,7 @@ class CommandSequence {
     return this._failed;
   }
   get finished() {
-    return this.complete || this.failed;
+    return (this.complete || this.failed) && this._animationCompleted;
   }
   get groupWidth() {
     return this._group.width;
@@ -64,6 +65,7 @@ class CommandSequence {
       } else {
         resultTint = TINT_FAILURE;
         this._failed = true;
+        this.animateFinish();
         console.log(`Wrong key - expected: [${nextKey.key}] actual: [${inputKey}]`);
       }
       this._group.children[groupIndex].tint = resultTint;
@@ -88,7 +90,7 @@ class CommandSequence {
       TWEENS.FINISH_DURATION,
       Phaser.Easing.Default,
       true,
-      this.onAnimationComplete);
+      TWEENS.START_DELAY);
     stationTween.onComplete.add(this.onAnimationComplete, this);
     text.x = this._group.centerX - text.textWidth * 0.5;
     const textTween = game.add.tween(text).to({
@@ -97,12 +99,13 @@ class CommandSequence {
       },
       TWEENS.FINISH_DURATION,
       Phaser.Easing.Default,
-      true);
+      true,
+      TWEENS.START_DELAY);
     textTween.onComplete.add(() => this.destroy(), text);
   }
   onAnimationComplete() {
     console.log('Cleaning up station', this);
-    this.destroy();
+    this._animationCompleted = true;
   }
   destroy() {
     if (this._group) {
@@ -168,6 +171,9 @@ class BaseStation {
     }
     if (this.sequence.receiveInput(key)) {
       // Correct letter
+      if (this.sequence.complete) {
+        this.sequence.animateFinish();
+      }
     } else {
       // Incorrect letter
     }
@@ -227,7 +233,6 @@ class BaseStation {
       } else if (this.sequence.failed) {
         this.signals.onFailure.dispatch(this.sequence);
       }
-      this.sequence.animateFinish();
       this.sequence = undefined;
     } else {
       console.warn('Called finishSequence with no sequence');
