@@ -62,7 +62,9 @@ class GameState extends BaseState {
     for (var i = 0; i < threats.length; i++) {
       threats[i].update();
     }
-    threatGroupMidnight.align(-1, 1, 9, 9);
+    if (threatGroupMidnight) {
+      threatGroupMidnight.align(-1, 1, 9, 9);
+    }
     player.update();
   }
   render() {
