@@ -3,6 +3,7 @@ let map;
 let layer;
 const stations = [];
 const threats = [];
+let HUDGROUP;
 
 class GameState extends BaseState {
   preload() {
@@ -18,6 +19,9 @@ class GameState extends BaseState {
   }
 
   create() {
+    // Create HUD Group
+    HUDGROUP = game.add.group();
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Set up the collision map
@@ -43,15 +47,22 @@ class GameState extends BaseState {
       player.registerStationSignals(stations[i].signals);
     }
   }
+  addThreat(type = undefined) {
+    const t = Threat.makeThreat(type);
+    threats.push(t);
+    this.registerThreatSignals(t.signals);
+  }
   update() {
-    // Sort the threats by the time remaining
-    threats.sort(item => item.remainingTime);
     for (var i = stations.length - 1; i >= 0; i--) {
       stations[i].update();
     }
+
+    // Sort the threats by the time remaining
+    threats.sort(item => item.remainingTime);
     for (var i = 0; i < threats.length; i++) {
       threats[i].update();
     }
+    threatGroupMidnight.align(-1, 1, 9, 9);
     player.update();
   }
   render() {
@@ -103,7 +114,7 @@ class GameState extends BaseState {
   }
   resolveThreat(threat) {
     const threatIdx = threats.indexOf(threat);
-    threats.splice(threatIdx);
+    threats.splice(threatIdx, 1);
     this.unregisterThreatSignals(threat.signals);
     threat.destroy();
   }
