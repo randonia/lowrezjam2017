@@ -21,7 +21,12 @@ h1, h2 {
 }
 
 .debug {
+  font-family: 'VT323', monospace;
+  background-color: #111;
   color: white;
+  position: absolute;
+  left: 25px;
+  top: 25px;
 }
 
 .header {
@@ -41,6 +46,15 @@ h1, h2 {
   width: 256px;
 }
 
+.instructions {
+  list-style: none;
+  padding: 0px;
+}
+
 .footer {
+  font-family: 'VT323', monospace;
+  color: white;
   height: 20px;
+  text-align: center;
+  padding: 0px;
 }
