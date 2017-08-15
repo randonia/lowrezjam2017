@@ -6,8 +6,13 @@ class CreditState extends BaseState {
   }
   create() {
     console.log('You either won or lost if you\'re here', INTER_SCENE_DATA);
-    const restartKey = game.input.keyboard.addKey(Phaser.Keyboard.I);
+    const restartKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     restartKey.onDown.add(this.restartGameState, this);
+
+    const bmpfnt = game.add.bitmapText(32, 32, 'visitor', 'Press\n<Enter>\nTo\nRestart', 8)
+    bmpfnt.x -= bmpfnt.textWidth * 0.5;
+    bmpfnt.y -= bmpfnt.textHeight * 0.5;
+    bmpfnt.align = 'center';
   }
   restartGameState() {
     game.state.start('game', true, false);
