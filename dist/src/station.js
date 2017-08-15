@@ -76,6 +76,7 @@ class CommandSequence {
       text.text = 'SUCCESS!';
       text.tint = TINT_SUCCESS;
     } else if (this.failed) {
+      game.camera.shake(0.001, TWEENS.HURT_DELAY, 0.001);
       text.text = 'FAILED!';
       text.tint = TINT_FAILURE;
     }

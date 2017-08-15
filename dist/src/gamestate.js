@@ -15,6 +15,7 @@ const TWEENS = {
   FINISH_DURATION: 500,
   START_DELAY: 250,
   PLAYER_DEATH_ANIM: 1500,
+  HURT_DELAY: 100,
 };
 
 class GameState extends BaseState {
