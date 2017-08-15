@@ -151,7 +151,6 @@ class GameState extends BaseState {
     return result;
   }
   update() {
-    game.world.bringToTop(HUDGROUP);
     switch (this._state) {
       case GameState.STATE_PLAYING:
         for (var i = stations.length - 1; i >= 0; i--) {
@@ -264,12 +263,14 @@ class GameState extends BaseState {
     console.warn('onDebugCompleteThreat');
     if (threats.length > 0) {
       threats[0].requirements = [];
+      this.onThreatComplete(threats[0]);
     }
   }
   onDebugFailThreat() {
     console.warn('onDebugFailThreat');
     if (threats.length > 0) {
       threats[0]._startTime = Number.NEGATIVE_INFINITY;
+      this.onThreatExpired(threats[0]);
     }
   }
 }

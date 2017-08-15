@@ -215,6 +215,9 @@ class BaseStation {
     throw new Error('Not Implemented BaseStation');
   }
   render() {
+    if (this.sequence) {
+      game.world.bringToTop(this.sequence._group);
+    }
     if (DEBUG) {
       game.debug.body(this.sprite);
     }

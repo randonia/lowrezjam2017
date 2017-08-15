@@ -58,7 +58,7 @@ class Threat {
     this.sprite.animations.add('base', Threat.getFrames(type), 4, true);
     this.sprite.play('base');
     this.text = game.add.bitmapText(this.sprite.right + 1, this._group.y + 1, 'visitor', this.type, 8);
-    this.text.alpha = 0.75;
+    this.text.alpha = 0.15;
     this._group.add(this.text);
     threatGroupMidnight.add(this._group);
     this.requirements = this.makeRequirements();
@@ -150,8 +150,18 @@ class Threat {
   }
   resolve() {
     if (this.complete) {
-      //
+      this.text.tint = TINT_SUCCESS;
+      const tween = game.add.tween(this._group).to({
+          y: this.sprite.y - 20,
+        },
+        TWEENS.THREAT_FAILURE,
+        Phaser.Easing.Default,
+        true);
+      tween.onComplete.add(() => {
+        this.destroy();
+      }, this);
     } else if (this.expired) { // failed
+      this.text.tint = TINT_FAILURE;
       game.camera.shake(0.001, 150, 0.001);
       game.camera.flash(0xff0000, 150, 0.001, 0.2);
       const tween = game.add.tween(this._group).to({

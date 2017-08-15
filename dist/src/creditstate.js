@@ -13,6 +13,12 @@ class CreditState extends BaseState {
     bmpfnt.x -= bmpfnt.textWidth * 0.5;
     bmpfnt.y -= bmpfnt.textHeight * 0.5;
     bmpfnt.align = 'center';
+
+    const plrAnim = game.add.sprite(0, 0, 'player');
+    plrAnim.animations.add('idle', [0, 1], 6, true);
+    plrAnim.play('idle');
+    plrAnim.anchor.set(0.5, 0.5);
+    plrAnim.position.set(game.screen.view.centerX, game.screen.view.bottom - 25);
   }
   restartGameState() {
     game.state.start('game', true, false);
