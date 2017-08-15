@@ -25,7 +25,9 @@ class GameState extends BaseState {
   static get STATE_EXPLODING() {
     return 'exploding';
   }
-
+  get nextSpawn() {
+    return this._threatDelay - (Date.now() - this._lastThreat);
+  }
   preload() {
     // Don't forget to update `xadvance` property on the font by +=1
     game.load.bitmapFont('smallfont', 'assets/fonts/sd_4x4_0.png', 'assets/fonts/sd_4x4.fnt');
@@ -75,6 +77,9 @@ class GameState extends BaseState {
       player.registerStationSignals(stations[i].signals);
     }
     this.transitionToState(GameState.STATE_PLAYING);
+
+    this._lastThreat = Number.NEGATIVE_INFINITY;
+    this._threatDelay = 10 * 1000;
   }
   setHullText() {
     let blips = Array(Math.ceil(INTER_SCENE_DATA.hull * 5) + 1).join('0');
@@ -94,12 +99,10 @@ class GameState extends BaseState {
     const t = Threat.makeThreat(type);
     threats.push(t);
     this.registerThreatSignals(t.signals);
+    return t;
   }
   transitionStartPlaying() {
     // TODO: Add tutorials I guess
-
-    // Add a threat
-    this.addThreat();
     this._state = GameState.STATE_PLAYING;
   }
   transitionGameOver() {
@@ -138,6 +141,15 @@ class GameState extends BaseState {
     player.destroy();
     player = undefined;
   }
+  trySpawnThreat() {
+    let result;
+    const now = Date.now();
+    if ((now - this._lastThreat) > this._threatDelay) {
+      this._lastThreat = now;
+      result = this.addThreat();
+    }
+    return result;
+  }
   update() {
     game.world.bringToTop(HUDGROUP);
     switch (this._state) {
@@ -147,7 +159,7 @@ class GameState extends BaseState {
         }
 
         // Sort the threats by the time remaining
-        threats.sort(item => item.remainingTime);
+        threats.sort(Threat.sortFn);
         for (var i = 0; i < threats.length; i++) {
           threats[i].update();
         }
@@ -155,6 +167,10 @@ class GameState extends BaseState {
           threatGroupMidnight.align(1, -1, 9, 9);
         }
         player.update();
+
+        if (this.trySpawnThreat()) {
+
+        }
         if (INTER_SCENE_DATA.hull <= 0) {
           this.transitionGameOver();
         }
@@ -171,9 +187,13 @@ class GameState extends BaseState {
     if (player) {
       player.render();
     }
+    if (DEBUG) {
+      debugText(threats.map(item => `${item.type} - ${item.remainingSeconds}`).join("\n"));
+    }
     debugText(`State: ${this._state}`);
     debugText(`Hull: ${INTER_SCENE_DATA.hull}`);
     debugText(`Bones: ${INTER_SCENE_DATA.bones}`);
+    debugText(`Next spawn: ${this.nextSpawn}`);
   }
   addBones(value) {
     INTER_SCENE_DATA.bones += value;
@@ -224,7 +244,7 @@ class GameState extends BaseState {
     const threatIdx = threats.indexOf(threat);
     threats.splice(threatIdx, 1);
     this.unregisterThreatSignals(threat.signals);
-    threat.destroy();
+    threat.resolve();
   }
   registerGameSignals() {
     this.keys = {

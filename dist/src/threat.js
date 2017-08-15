@@ -36,6 +36,15 @@ class Threat {
   get remainingSeconds() {
     return (this.remainingTime / 1000.0).toFixed(1);
   }
+  static sortFn(left, right) {
+    if (left.remainingTime < right.remainingTime) {
+      return -1;
+    }
+    if (left.remainingTime > right.remainingTime) {
+      return 1;
+    }
+    return 0;
+  }
   constructor(type) {
     if (!threatGroupMidnight) {
       threatGroupMidnight = game.add.group();
@@ -87,11 +96,7 @@ class Threat {
       this.signals.expired.dispatch(this);
     }
   }
-  render() {
-    if (DEBUG) {
-      debugText(`${this.type} - ${this.remainingSeconds}`);
-    }
-  }
+  render() {}
   makeRequirements() {
     throw new Error('Not Implemented');
   }
@@ -143,8 +148,24 @@ class Threat {
   destroy() {
     this._group.destroy();
   }
+  resolve() {
+    if (this.complete) {
+      //
+    } else if (this.expired) { // failed
+      game.camera.shake(0.001, 150, 0.001);
+      game.camera.flash(0xff0000, 150, 0.001, 0.2);
+      const tween = game.add.tween(this._group).to({
+          y: this.sprite.y - 20,
+        },
+        TWEENS.THREAT_FAILURE,
+        Phaser.Easing.Default,
+        true);
+      tween.onComplete.add(() => {
+        this.destroy();
+      }, this);
+    }
+  }
 }
-
 class AsteroidThreat extends Threat {
   constructor() {
     super(Threat.TYPE_ASTEROID);
