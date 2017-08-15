@@ -131,6 +131,10 @@ class GameState extends BaseState {
     while (threats.length > 0) {
       threats.shift().destroy();
     }
+    if (threatGroupMidnight) {
+      threatGroupMidnight.destroy();
+      threatGroupMidnight = undefined;
+    }
     player.destroy();
     player = undefined;
   }
@@ -193,7 +197,6 @@ class GameState extends BaseState {
       if (threat.acceptStationInput(sequence.station.type)) {
         // Resolve the threat with animation?
         console.log('Station ', sequence.station, 'targeting threat', threat);
-        this.addBones(threat.bones);
         break;
       }
     }
@@ -238,11 +241,13 @@ class GameState extends BaseState {
     this.addThreat();
   }
   onDebugCompleteThreat() {
+    console.warn('onDebugCompleteThreat');
     if (threats.length > 0) {
       threats[0].requirements = [];
     }
   }
   onDebugFailThreat() {
+    console.warn('onDebugFailThreat');
     if (threats.length > 0) {
       threats[0]._startTime = Number.NEGATIVE_INFINITY;
     }

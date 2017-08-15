@@ -141,10 +141,6 @@ class Threat {
     return result;
   }
   destroy() {
-    if (threatGroupMidnight) {
-      threatGroupMidnight.destroy();
-      threatGroupMidnight = undefined;
-    }
     this._group.destroy();
   }
 }
