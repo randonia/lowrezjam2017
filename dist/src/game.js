@@ -4,7 +4,10 @@ if (/localhost/.test(window.location.href)) {
 } else {
   console.info('ＥＮＶＩＲＯＮＭＥＮＴ: ＰＵＧ');
 }
-const game = new Phaser.Game(64, 64, Phaser.AUTO, 'game-container', new GameState());
+const game = new Phaser.Game(64, 64, Phaser.AUTO, 'game-container');
+game.state.add('game', new GameState());
+game.state.add('credits', new CreditState());
+game.state.start('game');
 
 console.info('ＨＵＭＡＮ ＭＵＳＩＣ');
 console.info('...Ｉ ＬＩＫＥ ＩＴ');

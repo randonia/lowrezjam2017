@@ -27,7 +27,7 @@ class Player {
       RIGHT: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
       UP: game.input.keyboard.addKey(Phaser.Keyboard.UP),
       DOWN: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
-      SLOW: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+      SLOW: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR), // Remove the space bar
       STATION_0: game.input.keyboard.addKey(Phaser.Keyboard.Z), // Four Station Keys
       STATION_1: game.input.keyboard.addKey(Phaser.Keyboard.X),
       STATION_2: game.input.keyboard.addKey(Phaser.Keyboard.C),
@@ -84,6 +84,7 @@ class Player {
     this.sprite.body.acceleration.y += dY * PLAYER_ACCELERATION;
     // Apply Space Dampeners
     if (this.keys.SLOW.isDown) {
+      console.log('Don\'t forget to remove the spacebar');
       this.sprite.body.acceleration.set(0, 0);
       this.sprite.body.velocity.x *= 0.85;
       this.sprite.body.velocity.y *= 0.85;
@@ -100,5 +101,8 @@ class Player {
       const dbgAccStr = sprintf('acceleration: %d, %d', this.sprite.body.acceleration.x, this.sprite.body.acceleration.y);
       debugText(dbgAccStr)
     }
+  }
+  destroy() {
+    this.sprite.destroy();
   }
 }

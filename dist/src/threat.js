@@ -48,13 +48,16 @@ class Threat {
     this.sprite = this._group.create(0, 0, 'threats');
     this.sprite.animations.add('base', Threat.getFrames(type), 4, true);
     this.sprite.play('base');
-    this.text = game.add.bitmapText(this.sprite.right + 1, this._group.y + 3, 'smallfont', 'Hello', 4);
+    this.text = game.add.bitmapText(this.sprite.right + 1, this._group.y + 1, 'visitor', this.type, 8);
     this.text.alpha = 0.75;
     this._group.add(this.text);
     threatGroupMidnight.add(this._group);
     this.requirements = this.makeRequirements();
     // in milliseconds
     this._duration = this.makeDuration();
+    this.bones = this.calculateBones();
+    this.damage = this.calculateDamage();
+    console.log(`Created new threat of type ${type} with ${this.damage} damage / ${this.bones} bones`)
     this._startTime = Date.now();
     this.signals = {
       complete: new Phaser.Signal(),
@@ -95,6 +98,13 @@ class Threat {
   makeDuration() {
     throw new Error('Not Implemented');
   }
+  calculateBones() {
+    throw new Error('Not Implemented');
+  }
+  calculateDamage() {
+    throw new Error('Not Implemented');
+  }
+
   static getFrames(type) {
     switch (type) {
       case Threat.TYPE_ENEMY:
@@ -131,6 +141,10 @@ class Threat {
     return result;
   }
   destroy() {
+    if (threatGroupMidnight) {
+      threatGroupMidnight.destroy();
+      threatGroupMidnight = undefined;
+    }
     this._group.destroy();
   }
 }
@@ -143,7 +157,13 @@ class AsteroidThreat extends Threat {
     return [STATION_TYPES.MISSILE];
   }
   makeDuration() {
-    return (5 + Math.random() * 15) * 1000;
+    return (15 + Math.random() * 5) * 1000;
+  }
+  calculateBones() {
+    return 20000 - this._duration;
+  }
+  calculateDamage() {
+    return 0.2;
   }
 }
 
@@ -156,5 +176,11 @@ class EnemyThreat extends Threat {
   }
   makeDuration() {
     return (10 + Math.random() * 15) * 1000;
+  }
+  calculateBones() {
+    return 25000 - this._duration;
+  }
+  calculateDamage() {
+    return 0.1;
   }
 }

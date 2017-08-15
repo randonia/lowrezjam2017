@@ -25,4 +25,7 @@ class BaseState {
   render() {
     throw Error('Not Implemented');
   }
+  shutdown() {
+    game.world.removeAll();
+  }
 }

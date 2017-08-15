@@ -25,10 +25,6 @@ const KEY_SPRITE_INDEX = {
 const TINT_SUCCESS = 0x00ff00;
 const TINT_FAILURE = 0xff0000;
 
-const TWEENS = {
-  FINISH_DURATION: 500,
-  START_DELAY: 250,
-};
 class CommandSequence {
   get complete() {
     return !this._failed && this._pendingActions.length === 0;
@@ -244,6 +240,12 @@ class BaseStation {
     }
     // Create another sequence
     this.sequence = this.buildCommandSequence();
+  }
+  destroy() {
+    if (this.sequence) {
+      this.sequence.destroy();
+    }
+    this.sprite.destroy();
   }
 }
 
