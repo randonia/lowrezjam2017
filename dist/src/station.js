@@ -126,6 +126,14 @@ class BaseStation {
   get animationFrames() {
     throw new Error('Not Implemented BaseStation');
   }
+  play() {
+    this.sprite.play('idle');
+    this.sprite.alpha = 1;
+  }
+  stop() {
+    this.sprite.animations.stop();
+    this.sprite.alpha = 0.6;
+  }
   buildRequiredActions() {
     throw new Error('Not Implemented');
   }

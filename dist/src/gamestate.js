@@ -199,6 +199,15 @@ class GameState extends BaseState {
     return result;
   }
   update() {
+    stations.forEach((station) => {
+      // See if a threat exists that is this station
+      let found = threats.filter(threat => threat.requirements.includes(station.type)).length > 0;
+      if (found) {
+        station.play();
+      } else {
+        station.stop();
+      }
+    });
     switch (this._state) {
       case GameState.STATE_STARTING:
         player.update(false);
