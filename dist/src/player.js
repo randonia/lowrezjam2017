@@ -18,6 +18,7 @@ class Player {
     this.sprite.gameObject = this;
     this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
+    this.sprite.body.maxVelocity.set(40, 40);
     this.sprite.body.collideWorldBounds = true;
     // player.body.gravity.y = 100;
     game.camera.follow(this.sprite);
