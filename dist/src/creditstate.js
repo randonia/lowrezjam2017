@@ -18,7 +18,7 @@ class CreditState extends BaseState {
     plrAnim.animations.add('idle', [0, 1], 6, true);
     plrAnim.play('idle');
     plrAnim.anchor.set(0.5, 0.5);
-    plrAnim.position.set(game.screen.view.centerX, game.screen.view.bottom - 25);
+    plrAnim.position.set(game.camera.view.centerX, game.camera.view.bottom - 25);
   }
   restartGameState() {
     game.state.start('game', true, false);
