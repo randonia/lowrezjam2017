@@ -9,9 +9,9 @@ class Player {
   }
 
   constructor() {
-    const startX = 8 * 12;
-    const startY = 8 * 12;
-    console.log(sprintf('Starting player at [%d,%d]', startX, startY));
+    const startX = 8 * 16;
+    const startY = 8 * 12.5;
+
     this.sprite = game.add.sprite(startX, startY, 'player');
     this.sprite.animations.add('idle', [0, 1], 6, true);
     this.sprite.play('idle');
@@ -54,8 +54,8 @@ class Player {
   }
   update(canMove = true) {
     // Handle player -> world collisions
-    if (layer) {
-      game.physics.arcade.collide(player.sprite, layer, this.onCollide);
+    if (shipWallLayer) {
+      game.physics.arcade.collide(player.sprite, shipWallLayer, this.onCollide);
     }
     // Movement
     const LEFT = this.keys.LEFT.isDown;

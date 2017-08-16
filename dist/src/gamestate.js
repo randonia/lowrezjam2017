@@ -1,6 +1,6 @@
 let player;
 let map;
-let layer;
+let shipWallLayer;
 const stations = [];
 const threats = [];
 let hullText;
@@ -42,7 +42,7 @@ class GameState extends BaseState {
     game.load.spritesheet('objects', 'assets/objects.png', 8, 8, 1);
     game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 25);
     game.load.spritesheet('threats', 'assets/threats.png', 8, 8, 16);
-    game.load.image('tiles-1', 'assets/player-ship.png');
+    game.load.image('tiles-1', 'assets/ship-walls.png');
   }
   create() {
     this._state = GameState.STATE_STARTING;
@@ -62,15 +62,12 @@ class GameState extends BaseState {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Set up the collision map
-    map = game.add.tilemap('ship-map');
-    map.addTilesetImage('player-ship', 'tiles-1');
-    map.setCollisionBetween(1, 6);
-    map.setCollisionBetween(16, 21);
-    map.setCollisionBetween(32, 37);
-    map.setCollisionBetween(48, 51);
-    layer = map.createLayer('ship-border');
-    layer.debug = DEBUG;
-    layer.resizeWorld();
+    map = game.add.tilemap('ship-map', 8, 8, 32, 32);
+    map.addTilesetImage('ship-walls', 'tiles-1');
+    map.setCollisionBetween(1, 1000, true, shipWallLayer);
+    shipWallLayer = map.createLayer('ship-walls');
+    shipWallLayer.debug = DEBUG;
+    shipWallLayer.resizeWorld();
 
     // Create the stations for the player to interact
     const missileStation = new MissileStation(4 * 8, 8 * 18);
