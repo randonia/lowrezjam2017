@@ -47,10 +47,12 @@ class GameState extends BaseState {
     game.load.image('tiles-1', 'assets/ship-walls.png');
   }
   create() {
-    bgm = game.add.audio('bgm');
-    bgm.play();
-    bgm.loop = true;
-    bgm.volume = 0.2;
+    if (!bgm) {
+      bgm = game.add.audio('bgm');
+      bgm.play();
+      bgm.loop = true;
+      bgm.volume = 0.2;
+    }
     this._state = GameState.STATE_STARTING;
     INTER_SCENE_DATA.hull = 1;
     INTER_SCENE_DATA.bones = 0;
@@ -125,7 +127,12 @@ class GameState extends BaseState {
     this._threatDelay = 10 * 1000;
   }
   setHullText() {
-    let blips = Array(Math.ceil(INTER_SCENE_DATA.hull * 5) + 1).join('0');
+    let strLen = Math.ceil(INTER_SCENE_DATA.hull * 5) + 1;
+    if (isNaN(strLen)) {
+      strLen = 0;
+    }
+    strLen = Math.max(strLen, 0);
+    let blips = Array(strLen).join('0');
     hullText.text = `HULL: ${blips}`;
   }
   transitionToState(stateTo) {
