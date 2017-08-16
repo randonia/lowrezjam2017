@@ -37,7 +37,7 @@ class GameState extends BaseState {
     game.load.bitmapFont('smallfont', 'assets/fonts/sd_4x4_0.png', 'assets/fonts/sd_4x4.fnt');
     game.load.bitmapFont('visitor', 'assets/fonts/visitor_0.png', 'assets/fonts/visitor.fnt');
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('player', 'assets/player.png', 8, 8, 2);
+    game.load.spritesheet('player', 'assets/player.png', 8, 8, 6);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);
     game.load.spritesheet('objects', 'assets/objects.png', 8, 8, 1);
     game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 25);
@@ -98,7 +98,6 @@ class GameState extends BaseState {
       const _y = TILESIZE * stationData.y;
       const newStation = new stationData._class(_x, _y);
       stations.push(newStation);
-      console.log('new station:', newStation);
     });
 
     // Create the player
@@ -111,6 +110,8 @@ class GameState extends BaseState {
     // Create the command switch
     commandSwitch = new CommandSwitch(player.X, player.Y);
     this.registerCommandSwitchSignals(commandSwitch.signals);
+    game.world.bringToTop(player.sprite);
+
     // Let the player sit for a bit
     this._lastThreat = Number.POSITIVE_INFINITY;
     this._threatDelay = 10 * 1000;
@@ -333,9 +334,15 @@ class GameState extends BaseState {
     }
   }
   onDebugSpawnThreat() {
+    if (!DEBUG) {
+      return;
+    }
     this.addThreat();
   }
   onDebugCompleteThreat() {
+    if (!DEBUG) {
+      return;
+    }
     console.warn('onDebugCompleteThreat');
     if (threats.length > 0) {
       threats[0].requirements = [];
@@ -343,6 +350,9 @@ class GameState extends BaseState {
     }
   }
   onDebugFailThreat() {
+    if (!DEBUG) {
+      return;
+    }
     console.warn('onDebugFailThreat');
     if (threats.length > 0) {
       threats[0]._startTime = Number.NEGATIVE_INFINITY;

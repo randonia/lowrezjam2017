@@ -22,6 +22,10 @@ class Player {
     // player.body.gravity.y = 100;
     game.camera.follow(this.sprite);
     this.cursors = game.input.keyboard.createCursorKeys();
+    this.jetpackSprite = game.add.sprite(startX + 5, startY, 'player');
+    this.jetpackSprite.animations.add('idle', [4, 5], 8, true);
+    this.jetpackSprite.animations.play('idle');
+    this.jetpackSprite.anchor.set(1, 0.35);
     this.keys = {
       LEFT: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
       RIGHT: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
@@ -65,6 +69,11 @@ class Player {
 
     this.sprite.scale.x = (LEFT && !RIGHT) ? -1 : this.sprite.scale.x;
     this.sprite.scale.x = (!LEFT && RIGHT) ? 1 : this.sprite.scale.x;
+
+    // Move the little thruster
+    this.jetpackSprite.position.set(this.X, this.Y);
+    this.jetpackSprite.scale.x = this.sprite.scale.x;
+
     let dX = 0;
     let dY = 0;
     dX -= LEFT ? 1 : 0;
@@ -79,7 +88,11 @@ class Player {
     if (!UP && !DOWN) {
       dY = -this.sprite.body.acceleration.y * 0.125;
     }
-
+    if (!UP && !DOWN && !LEFT && !RIGHT) {
+      this.jetpackSprite.alpha = 0;
+    } else {
+      this.jetpackSprite.alpha = 1;
+    }
     this.sprite.body.acceleration.x += dX * PLAYER_ACCELERATION;
     this.sprite.body.acceleration.y += dY * PLAYER_ACCELERATION;
     // Apply Space Dampeners
