@@ -9,7 +9,7 @@ class CreditState extends BaseState {
     const restartKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     restartKey.onDown.add(this.restartGameState, this);
 
-    const bmpfnt = game.add.bitmapText(32, 32, 'visitor', 'Press\n<Enter>\nTo\nRestart', 8)
+    const bmpfnt = game.add.bitmapText(32, 32, 'visitor', `You saved\n${Math.round(INTER_SCENE_DATA.bones)}\nbones\nGood work\nPress\n<Enter>\nTo\nRestart`, 8)
     bmpfnt.x -= bmpfnt.textWidth * 0.5;
     bmpfnt.y -= bmpfnt.textHeight * 0.5;
     bmpfnt.align = 'center';
