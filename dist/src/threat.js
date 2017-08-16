@@ -9,6 +9,12 @@ class Threat {
   static get TYPE_ASTEROID() {
     return 'asteroid';
   }
+  static get TYPE_LEECH() {
+    return 'leech';
+  }
+  static get TYPE_BLACKHOLE() {
+    return 'blackhole';
+  }
   get X() {
     return this.sprite.position.x;
   }
@@ -116,6 +122,10 @@ class Threat {
         return [0, 1, 2, 3];
       case Threat.TYPE_ASTEROID:
         return [4, 5, 6, 7];
+      case Threat.TYPE_LEECH:
+        return [8, 9, 10, 11];
+      case Threat.TYPE_BLACKHOLE:
+        return [12, 13, 14, 15];
     }
     console.error(`Type ${type} not accounted for in getFrames`);
     return [];
@@ -124,6 +134,8 @@ class Threat {
     const _threats = [
       Threat.TYPE_ASTEROID,
       Threat.TYPE_ENEMY,
+      Threat.TYPE_LEECH,
+      Threat.TYPE_BLACKHOLE,
     ];
     const randIdx = Math.floor(Math.random() * _threats.length);
     return _threats[randIdx];
@@ -139,6 +151,12 @@ class Threat {
         break;
       case Threat.TYPE_ENEMY:
         result = new EnemyThreat();
+        break;
+      case Threat.TYPE_LEECH:
+        result = new LeechThreat();
+        break;
+      case Threat.TYPE_BLACKHOLE:
+        result = new BlackHoleThreat();
         break;
       default:
         console.warn(`Attempted to make threat of type ${type} and did not`);
@@ -209,5 +227,41 @@ class EnemyThreat extends Threat {
   }
   calculateDamage() {
     return 0.1;
+  }
+}
+
+class LeechThreat extends Threat {
+  constructor() {
+    super(Threat.TYPE_LEECH);
+  }
+  makeRequirements() {
+    return [STATION_TYPES.SHIELD];
+  }
+  makeDuration() {
+    return (10 + Math.random() * 15) * 1000;
+  }
+  calculateBones() {
+    return 0;
+  }
+  calculateDamage() {
+    return 0.3;
+  }
+}
+
+class BlackHoleThreat extends Threat {
+  constructor() {
+    super(Threat.TYPE_BLACKHOLE);
+  }
+  makeRequirements() {
+    return [STATION_TYPES.THRUST];
+  }
+  makeDuration() {
+    return (10 + Math.random() * 15) * 1000;
+  }
+  calculateBones() {
+    return 0;
+  }
+  calculateDamage() {
+    return 0.6;
   }
 }
