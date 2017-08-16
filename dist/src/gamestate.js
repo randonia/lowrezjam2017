@@ -86,8 +86,6 @@ class GameState extends BaseState {
     // Let the player sit for a bit
     this._lastThreat = Number.POSITIVE_INFINITY;
     this._threatDelay = 10 * 1000;
-
-    game.world.bringToTop(HUDGROUP);
   }
   setHullText() {
     let blips = Array(Math.ceil(INTER_SCENE_DATA.hull * 5) + 1).join('0');
@@ -194,6 +192,8 @@ class GameState extends BaseState {
     }
   }
   render() {
+    game.world.bringToTop(HUDGROUP);
+
     for (var i = stations.length - 1; i >= 0; i--) {
       stations[i].render();
     }
