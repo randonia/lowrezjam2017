@@ -97,7 +97,7 @@ class Player {
     this.sprite.body.acceleration.x += dX * PLAYER_ACCELERATION;
     this.sprite.body.acceleration.y += dY * PLAYER_ACCELERATION;
     // Apply Space Dampeners
-    if (this.keys.SLOW.isDown) {
+    if (this.keys.SLOW.isDown && DEBUG) {
       console.log('Don\'t forget to remove the spacebar');
       this.sprite.body.acceleration.set(0, 0);
       this.sprite.body.velocity.x *= 0.85;
