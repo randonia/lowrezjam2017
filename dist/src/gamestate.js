@@ -64,8 +64,10 @@ class GameState extends BaseState {
     // Set up the collision map
     map = game.add.tilemap('ship-map', 8, 8, 32, 32);
     map.addTilesetImage('ship-walls', 'tiles-1');
-    map.setCollisionBetween(1, 1000, true, shipWallLayer);
+    const shipFloorLayer = map.createLayer('ship_floors');
     shipWallLayer = map.createLayer('ship-walls');
+    const shipDecoLayer = map.createLayer('ship-deco');
+    map.setCollisionBetween(1, 1000, true, shipWallLayer);
     shipWallLayer.debug = DEBUG;
     shipWallLayer.resizeWorld();
 
