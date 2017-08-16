@@ -6,6 +6,7 @@ const threats = [];
 let hullText;
 let HUDGROUP;
 let commandSwitch;
+let bgm;
 
 const INTER_SCENE_DATA = {
   bones: 0,
@@ -34,6 +35,7 @@ class GameState extends BaseState {
   }
   preload() {
     // Don't forget to update `xadvance` property on the font by +=1
+    game.load.audio('bgm', 'assets/audio/Reformat.mp3');
     game.load.bitmapFont('smallfont', 'assets/fonts/sd_4x4_0.png', 'assets/fonts/sd_4x4.fnt');
     game.load.bitmapFont('visitor', 'assets/fonts/visitor_0.png', 'assets/fonts/visitor.fnt');
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
@@ -45,6 +47,10 @@ class GameState extends BaseState {
     game.load.image('tiles-1', 'assets/ship-walls.png');
   }
   create() {
+    bgm = game.add.audio('bgm');
+    bgm.play();
+    bgm.loop = true;
+    bgm.volume = 0.2;
     this._state = GameState.STATE_STARTING;
     INTER_SCENE_DATA.hull = 1;
     INTER_SCENE_DATA.bones = 0;
