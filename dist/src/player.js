@@ -52,7 +52,7 @@ class Player {
     a.unregisterInputSignal('keyInput', this.keys.STATION_2.onDown);
     a.unregisterInputSignal('keyInput', this.keys.STATION_3.onDown);
   }
-  update() {
+  update(canMove = true) {
     // Handle player -> world collisions
     if (layer) {
       game.physics.arcade.collide(player.sprite, layer, this.onCollide);
@@ -88,6 +88,10 @@ class Player {
       this.sprite.body.acceleration.set(0, 0);
       this.sprite.body.velocity.x *= 0.85;
       this.sprite.body.velocity.y *= 0.85;
+    }
+    if (!canMove) {
+      this.sprite.body.velocity.set(0, 0);
+      this.sprite.body.acceleration.set(0, 0);
     }
   }
   onCollide(sprite1, sprite2) {

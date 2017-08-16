@@ -5,6 +5,7 @@ const stations = [];
 const threats = [];
 let hullText;
 let HUDGROUP;
+let commandSwitch;
 
 const INTER_SCENE_DATA = {
   bones: 0,
@@ -19,6 +20,9 @@ const TWEENS = {
 };
 
 class GameState extends BaseState {
+  static get STATE_STARTING() {
+    return 'starting';
+  }
   static get STATE_PLAYING() {
     return 'playing';
   }
@@ -35,11 +39,13 @@ class GameState extends BaseState {
     game.load.tilemap('ship-map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('player', 'assets/player.png', 8, 8, 2);
     game.load.spritesheet('stations', 'assets/stations.png', 16, 16, 16);
-    game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 23);
+    game.load.spritesheet('objects', 'assets/objects.png', 8, 8, 1);
+    game.load.spritesheet('qtkeys', 'assets/letters.png', 8, 8, 25);
     game.load.spritesheet('threats', 'assets/threats.png', 8, 8, 16);
     game.load.image('tiles-1', 'assets/player-ship.png');
   }
   create() {
+    this._state = GameState.STATE_STARTING;
     INTER_SCENE_DATA.hull = 1;
     INTER_SCENE_DATA.bones = 0;
     this.registerGameSignals();
@@ -72,13 +78,16 @@ class GameState extends BaseState {
 
     // Create the player
     player = new Player();
+    player.update();
     for (var i = stations.length - 1; i >= 0; i--) {
       this.registerStationSignals(stations[i].signals);
       player.registerStationSignals(stations[i].signals);
     }
-    this.transitionToState(GameState.STATE_PLAYING);
-
-    this._lastThreat = Number.NEGATIVE_INFINITY;
+    // Create the command switch
+    commandSwitch = new CommandSwitch(player.X, player.Y);
+    this.registerCommandSwitchSignals(commandSwitch.signals);
+    // Let the player sit for a bit
+    this._lastThreat = Number.POSITIVE_INFINITY;
     this._threatDelay = 10 * 1000;
   }
   setHullText() {
@@ -86,6 +95,7 @@ class GameState extends BaseState {
     hullText.text = `HULL: ${blips}`;
   }
   transitionToState(stateTo) {
+    console.log(`Transitioning to ${stateTo}`);
     switch (stateTo) {
       case GameState.STATE_PLAYING:
         this.transitionStartPlaying();
@@ -102,10 +112,14 @@ class GameState extends BaseState {
     return t;
   }
   transitionStartPlaying() {
+    this.unregisterCommandSwitchSignals(commandSwitch.signals);
     // TODO: Add tutorials I guess
     this._state = GameState.STATE_PLAYING;
+    this._lastThreat = Date.now();
+    this.registerCommandSwitchSignals(commandSwitch.signals);
   }
   transitionGameOver() {
+    this.unregisterCommandSwitchSignals(commandSwitch.signals);
     // Shake and fade out camera
     game.camera.shake(0.001, 1500, 0.001);
     game.camera.fade(0x8f0000, 1300);
@@ -120,8 +134,8 @@ class GameState extends BaseState {
       this.showCreditsScreen();
     }, this);
     // Change to credits screen
-
     this._state = GameState.STATE_EXPLODING;
+    this.registerCommandSwitchSignals(commandSwitch.signals);
   }
   showCreditsScreen() {
     this.cleanUp();
@@ -152,6 +166,10 @@ class GameState extends BaseState {
   }
   update() {
     switch (this._state) {
+      case GameState.STATE_STARTING:
+        player.update(false);
+        commandSwitch.update();
+        break;
       case GameState.STATE_PLAYING:
         for (var i = stations.length - 1; i >= 0; i--) {
           stations[i].update();
@@ -165,8 +183,8 @@ class GameState extends BaseState {
         if (threatGroupMidnight) {
           threatGroupMidnight.align(1, -1, 9, 9);
         }
+        commandSwitch.update();
         player.update();
-
         if (this.trySpawnThreat()) {
 
         }
@@ -186,6 +204,9 @@ class GameState extends BaseState {
     if (player) {
       player.render();
     }
+    if (commandSwitch) {
+      commandSwitch.render();
+    }
     if (DEBUG) {
       debugText(threats.map(item => `${item.type} - ${item.remainingSeconds}`).join("\n"));
     }
@@ -200,6 +221,14 @@ class GameState extends BaseState {
   damageHull(value) {
     INTER_SCENE_DATA.hull -= value;
     this.setHullText();
+  }
+  onStartGamePressed(commandSwitch) {
+    this.transitionStartPlaying();
+    commandSwitch.hide();
+  }
+  onWarpJumpPressed() {
+    // Test if you're able to jump
+    console.log('TESTING');
   }
   // Expects onComplete and onFailure
   registerStationSignals(signals) {
@@ -255,6 +284,26 @@ class GameState extends BaseState {
     this.keys.DEBUG_SPAWN_THREAT.onDown.add(this.onDebugSpawnThreat, this);
     this.keys.DEBUG_COMPLETE_THREAT.onDown.add(this.onDebugCompleteThreat, this);
     this.keys.DEBUG_FAIL_THREAT.onDown.add(this.onDebugFailThreat, this);
+  }
+  registerCommandSwitchSignals(signals) {
+    switch (this._state) {
+      case GameState.STATE_STARTING:
+        signals.activate.add(this.onStartGamePressed, this);
+        break;
+      case GameState.STATE_PLAYING:
+        signals.activate.add(this.onWarpJumpPressed, this);
+        break;
+    }
+  }
+  unregisterCommandSwitchSignals(signals) {
+    switch (this._state) {
+      case GameState.STATE_STARTING:
+        signals.activate.remove(this.onStartGamePressed, this);
+        break;
+      case GameState.STATE_PLAYING:
+        signals.activate.remove(this.onWarpJumpPressed, this);
+        break;
+    }
   }
   onDebugSpawnThreat() {
     this.addThreat();
