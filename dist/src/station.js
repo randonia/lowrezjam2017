@@ -1,9 +1,8 @@
 const STATION_TYPES = {
   MISSILE: 0,
   SHIELD: 1,
-  CORE: 2,
-  THRUST: 3,
-  LASER: 4,
+  THRUST: 2,
+  LASER: 3,
 };
 
 function getStationStr(typeVal) {
@@ -124,15 +123,25 @@ class BaseStation {
   get type() {
     throw new Error('Not Implemented BaseStation');
   }
+  get animationFrames() {
+    throw new Error('Not Implemented BaseStation');
+  }
   buildRequiredActions() {
     throw new Error('Not Implemented');
   }
+  generateSequence() {
+    const OPTS = this.buildRequiredActions();
+    const rand = Math.floor(Math.random() * OPTS.length);
+    return OPTS[rand].split('').map(item => new Action(item));
+  }
   buildCommandSequence() {
-    return new CommandSequence(this.buildRequiredActions(), this);
+    return new CommandSequence(this.generateSequence(), this);
   }
   constructor(x, y) {
     // Engine stuff
     this.sprite = game.add.sprite(x, y, 'stations');
+    this.sprite.animations.add('idle', this.animationFrames, 6, true);
+    this.sprite.play('idle');
     this.sprite.gameObject = this;
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.height = this.sprite.height * 0.5;
@@ -257,28 +266,64 @@ class MissileStation extends BaseStation {
   get type() {
     return STATION_TYPES.MISSILE;
   }
+  get animationFrames() {
+    return [0, 1, 2, 3];
+  }
   buildRequiredActions() {
-    const OPTS = [
+    return [
     'zxcv',
     'vcxz',
     'xczv',
     ];
-    const rand = Math.floor(Math.random() * OPTS.length);
-    return OPTS[rand].split('').map(item => new Action(item));
   }
 }
 class ShieldStation extends BaseStation {
   get type() {
     return STATION_TYPES.SHIELD;
   }
+  get animationFrames() {
+    return [4, 5, 6, 7];
+  }
+  buildRequiredActions() {
+    return [
+    'zxzx',
+    'xcxc',
+    'cvcv',
+    'vzvz',
+    ];
+  }
 }
-class CoreStation extends BaseStation {
+class LaserStation extends BaseStation {
   get type() {
-    return STATION_TYPES.CORE;
+    return STATION_TYPES.LASER;
+  }
+  get animationFrames() {
+    return [8, 9, 10, 11];
+  }
+  buildRequiredActions() {
+    return [
+    'zzxx',
+    'zzcc',
+    'zzvv',
+    'xxzz',
+    'xxcc',
+    'xxvv',
+    ];
   }
 }
 class ThrustStation extends BaseStation {
   get type() {
     return STATION_TYPES.THRUST;
+  }
+  get animationFrames() {
+    return [12, 13, 14, 15];
+  }
+  buildRequiredActions() {
+    return [
+    'zzxzz',
+    'xxcxx',
+    'ccvcc',
+    'vvzvv',
+    ];
   }
 }

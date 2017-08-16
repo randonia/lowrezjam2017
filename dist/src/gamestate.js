@@ -70,8 +70,36 @@ class GameState extends BaseState {
     shipWallLayer.resizeWorld();
 
     // Create the stations for the player to interact
-    const missileStation = new MissileStation(4 * 8, 8 * 18);
-    stations.push(missileStation);
+    const TILESIZE = 8
+    const STATIONDATA = [
+      {
+        _class: MissileStation,
+        x: 3,
+        y: 24,
+      },
+      {
+        _class: LaserStation,
+        x: 27,
+        y: 24,
+      },
+      {
+        _class: ShieldStation,
+        x: 15,
+        y: 5,
+      },
+      {
+        _class: ThrustStation,
+        x: 15,
+        y: 28,
+      },
+    ];
+    STATIONDATA.forEach((stationData) => {
+      const _x = TILESIZE * stationData.x;
+      const _y = TILESIZE * stationData.y;
+      const newStation = new stationData._class(_x, _y);
+      stations.push(newStation);
+      console.log('new station:', newStation);
+    });
 
     // Create the player
     player = new Player();
