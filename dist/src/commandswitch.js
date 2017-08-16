@@ -2,6 +2,8 @@
 class CommandSwitch {
   constructor(_x, _y) {
     this.sprite = game.add.sprite(_x, _y, 'objects');
+    this.sprite.animations.add('idle', [0, 1, 2, 3], 8, true);
+    this.sprite.play('idle');
     this.sprite.gameObject = this;
     this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
