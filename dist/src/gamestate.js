@@ -49,8 +49,8 @@ class GameState extends BaseState {
   create() {
     if (!bgm) {
       bgm = game.add.audio('bgm');
-      bgm.play();
       bgm.loop = true;
+      bgm.play();
       bgm.volume = 0.2;
     }
     this._state = GameState.STATE_STARTING;
